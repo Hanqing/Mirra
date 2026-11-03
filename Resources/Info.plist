@@ -4,45 +4,45 @@
 <dict>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>zh-Hans</string>
+	<key>CFBundleDisplayName</key>
+	<string>Mirra</string>
+	<key>CFBundleExecutable</key>
+	<string>Mirra</string>
+	<key>CFBundleIconFile</key>
+	<string>AppIcon</string>
+	<key>CFBundleIconName</key>
+	<string>AppIcon</string>
+	<key>CFBundleIdentifier</key>
+	<string>com.hanqing.Mirra</string>
 	<key>CFBundleLocalizations</key>
 	<array>
 		<string>zh-Hans</string>
 	</array>
 	<key>CFBundleName</key>
 	<string>Mirra</string>
-	<key>CFBundleDisplayName</key>
-	<string>Mirra</string>
-	<key>CFBundleIdentifier</key>
-	<string>com.hanqing.Mirra</string>
-	<key>CFBundleExecutable</key>
-	<string>Mirra</string>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
 	<string>1.2.0</string>
 	<key>CFBundleVersion</key>
-	<string>3</string>
-	<key>CFBundleIconFile</key>
-	<string>AppIcon</string>
-	<key>CFBundleIconName</key>
-	<string>AppIcon</string>
-	<key>NSHumanReadableCopyright</key>
-	<string>Mirra 舞镜 · 手机端组件来自 scrcpy（Apache 2.0）</string>
+	<string>4</string>
+	<key>LSApplicationCategoryType</key>
+	<string>public.app-category.healthcare-fitness</string>
 	<key>LSMinimumSystemVersion</key>
 	<string>26.0</string>
 	<key>NSHighResolutionCapable</key>
 	<true/>
-	<key>LSApplicationCategoryType</key>
-	<string>public.app-category.healthcare-fitness</string>
+	<key>NSHumanReadableCopyright</key>
+	<string>Mirra 舞镜 · 手机端组件来自 scrcpy（Apache 2.0）</string>
+	<key>SUAllowsAutomaticUpdates</key>
+	<true/>
+	<key>SUEnableAutomaticChecks</key>
+	<true/>
 	<key>SUFeedURL</key>
 	<string>https://hanqing.github.io/Mirra/appcast.xml</string>
 	<key>SUPublicEDKey</key>
 	<string>8E9LmmlQHIP86QZuaYids9K8Rj5YnEKNp5DmHPXSdL4=</string>
-	<key>SUEnableAutomaticChecks</key>
-	<true/>
 	<key>SUScheduledCheckInterval</key>
 	<integer>86400</integer>
-	<key>SUAllowsAutomaticUpdates</key>
-	<true/>
 </dict>
 </plist>
