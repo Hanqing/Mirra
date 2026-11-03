@@ -1,0 +1,638 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DisplayCam · 手机当眼睛，显示器当镜子</title>
+<meta name="description" content="把闲置的 Android 手机对着自己，DisplayCam 把画面实时投到 Mac 的显示器上。镜像、延迟回放、一键录制，专为跟练跳舞设计。">
+<meta property="og:title" content="DisplayCam · 手机当眼睛，显示器当镜子">
+<meta property="og:description" content="家里没地方放镜子？用旧手机和第二台显示器，跟着视频练舞。">
+<meta property="og:image" content="https://hanqing.github.io/DisplayCam/img/icon.png">
+<meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0b0b0c" media="(prefers-color-scheme: dark)">
+<link rel="icon" href="img/favicon.png" type="image/png">
+<link rel="apple-touch-icon" href="img/apple-touch-icon.png">
+<style>
+  :root {
+    --bg: #ffffff;
+    --bg-soft: #f6f5f3;
+    --ink: #0e0d0c;
+    --ink-2: #4f4b48;
+    --ink-3: #7b7672;
+    --line: rgba(30, 20, 12, 0.11);
+    --line-2: rgba(30, 20, 12, 0.065);
+    --accent: #f2493f;
+    --accent-2: #ff8a3c;
+    --accent-soft: rgba(242, 73, 63, 0.09);
+    --nav-bg: rgba(255, 255, 255, 0.82);
+    --btn-bg: #ec4237;
+    --btn-ink: #ffffff;
+    --btn-shadow: rgba(236, 66, 55, 0.45);
+    --card: #ffffff;
+    --maxw: 1200px;
+    --ease-out: cubic-bezier(.16, 1, .3, 1);
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #0b0b0c;
+      --bg-soft: #141415;
+      --ink: #f4f2f0;
+      --ink-2: #b1aca8;
+      --ink-3: #8a8581;
+      --line: rgba(255, 255, 255, 0.13);
+      --line-2: rgba(255, 255, 255, 0.075);
+      --accent: #ff6b5c;
+      --accent-2: #ffa25c;
+      --accent-soft: rgba(255, 107, 92, 0.13);
+      --nav-bg: rgba(14, 14, 15, 0.8);
+      --btn-bg: #ff6b5c;
+      --btn-ink: #1a0705;
+      --btn-shadow: rgba(0, 0, 0, 0.6);
+      --card: #161617;
+      color-scheme: dark;
+    }
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; overflow-x: clip; scroll-padding-top: 72px; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background: var(--bg); color: var(--ink); line-height: 1.6; overflow-x: clip;
+    -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility;
+  }
+  :is(h1, h2, h3, .tagline) { word-break: keep-all; overflow-wrap: anywhere; }
+  a { color: inherit; text-decoration: none; }
+  img { display: block; max-width: 100%; }
+  .wrap { max-width: var(--maxw); margin: 0 auto; padding: 0 24px; }
+
+  /* ---------- Nav ---------- */
+  nav {
+    position: fixed; inset: 0 0 auto 0; height: 60px; z-index: 100;
+    background: var(--nav-bg);
+    backdrop-filter: saturate(180%) blur(20px); -webkit-backdrop-filter: saturate(180%) blur(20px);
+    border-bottom: 1px solid transparent; transition: border-color .3s ease;
+  }
+  nav.scrolled { border-bottom-color: var(--line-2); }
+  .nav-inner { height: 100%; display: flex; align-items: center; justify-content: space-between; }
+  .brand { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 16px; letter-spacing: -0.01em; }
+  .brand img { width: 30px; height: 30px; }
+  .nav-actions { display: flex; align-items: center; gap: 24px; }
+  .nav-links { display: flex; gap: 24px; }
+  .nav-links a { font-size: 13.5px; font-weight: 500; color: var(--ink-2); transition: color .2s ease; }
+  .nav-links a:hover { color: var(--ink); }
+  .btn-nav {
+    display: inline-flex; align-items: center; background: var(--btn-bg); color: var(--btn-ink);
+    padding: 7px 16px; border-radius: 980px; font-size: 13px; font-weight: 600;
+    opacity: 0; transform: translateY(-4px); pointer-events: none;
+    transition: opacity .3s ease, transform .3s var(--ease-out);
+  }
+  nav.scrolled .btn-nav { opacity: 1; transform: none; pointer-events: auto; }
+
+  /* ---------- Buttons ---------- */
+  .btn {
+    display: inline-flex; align-items: center; gap: 11px; background: var(--btn-bg); color: var(--btn-ink);
+    padding: 12px 24px 12px 20px; border-radius: 22px; box-shadow: 0 10px 26px -14px var(--btn-shadow);
+    transition: filter .2s ease, transform .2s var(--ease-out);
+  }
+  .btn:hover { filter: brightness(1.06); transform: translateY(-1px); }
+  .btn svg { width: 26px; height: 26px; fill: currentColor; flex: none; }
+  .btn small { display: block; font-size: 11px; font-weight: 500; opacity: .78; line-height: 1.15; }
+  .btn b { display: block; font-size: 18px; font-weight: 600; line-height: 1.2; }
+  .link-more { display: inline-flex; align-items: center; gap: 5px; font-size: 14.5px; font-weight: 500; color: var(--ink-2); transition: color .2s ease; }
+  .link-more::after { content: "›"; font-size: 18px; line-height: 1; transform: translateY(-1px); transition: transform .2s ease; }
+  .link-more:hover { color: var(--accent); }
+  .link-more:hover::after { transform: translate(2px, -1px); }
+
+  /* ---------- Hero ---------- */
+  .hero {
+    padding: 132px 0 40px; text-align: center; position: relative;
+    background:
+      radial-gradient(48% 420px at 32% 120px, rgba(255, 138, 60, .13), transparent),
+      radial-gradient(48% 440px at 70% 100px, rgba(242, 73, 63, .10), transparent);
+    background-repeat: no-repeat;
+  }
+  .hero-icon { width: 92px; height: 92px; margin: 0 auto 28px; animation: rise .8s var(--ease-out) both; }
+  .hero-icon img { width: 100%; height: 100%; filter: drop-shadow(0 16px 24px rgba(120, 30, 20, .22)); animation: float 6s ease-in-out 1s infinite; }
+  .hero h1 {
+    font-size: clamp(38px, 6vw, 72px); font-weight: 800; line-height: 1.12; letter-spacing: -0.015em;
+    max-width: 980px; margin: 0 auto 22px; text-wrap: balance; animation: rise .8s var(--ease-out) .06s both;
+  }
+  .hero h1 em { font-style: normal; background: linear-gradient(100deg, var(--accent-2), var(--accent)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .tagline {
+    font-size: clamp(17px, 2vw, 21px); font-weight: 450; color: var(--ink-2); max-width: 720px;
+    margin: 0 auto 36px; text-wrap: balance; animation: rise .8s var(--ease-out) .14s both;
+  }
+  .hero-cta { display: flex; align-items: center; justify-content: center; gap: 16px 28px; flex-wrap: wrap; animation: rise .8s var(--ease-out) .22s both; }
+  .requirements { margin-top: 22px; color: var(--ink-3); font-size: 13.5px; animation: rise .8s var(--ease-out) .3s both; }
+
+  /* ---------- Desk scene (two displays + phone) ---------- */
+  .scene { position: relative; margin: 72px auto 0; max-width: 1120px; padding: 0 24px; animation: rise 1s var(--ease-out) .32s both; }
+  .desk { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; align-items: end; }
+  .monitor { position: relative; }
+  .screen {
+    position: relative; aspect-ratio: 16 / 10; border-radius: 16px; overflow: hidden;
+    background: #0d0d0f; padding: 9px; box-shadow: 0 1px 0 rgba(255,255,255,.06) inset, 0 40px 80px -40px rgba(40, 10, 5, .45), 0 0 0 1px rgba(0,0,0,.25);
+  }
+  .screen-inner { position: relative; width: 100%; height: 100%; border-radius: 9px; overflow: hidden; }
+  .neck { width: 16%; height: 46px; margin: 0 auto; background: linear-gradient(90deg, #c9c8c6, #e9e8e6 45%, #bdbcb9); }
+  .foot { width: 34%; height: 9px; margin: 0 auto; border-radius: 6px 6px 3px 3px; background: linear-gradient(#e6e5e3, #b9b8b5); box-shadow: 0 14px 22px -10px rgba(0,0,0,.35); }
+  @media (prefers-color-scheme: dark) {
+    .neck { background: linear-gradient(90deg, #2a2a2c, #3b3b3e 45%, #252527); }
+    .foot { background: linear-gradient(#3a3a3d, #222224); }
+  }
+  .monitor-label { margin-top: 16px; text-align: center; font-size: 13.5px; font-weight: 600; color: var(--ink-3); }
+
+  /* Browser with a practice video */
+  .browser { background: #f4f3f1; height: 100%; display: flex; flex-direction: column; }
+  .browser-bar { height: 9%; display: flex; align-items: center; gap: 5px; padding: 0 3%; background: #e9e7e4; }
+  .browser-bar i { width: 7px; height: 7px; border-radius: 50%; background: #d3cfcb; }
+  .browser-bar span { margin-left: 4%; flex: 1; height: 52%; border-radius: 6px; background: #fff; }
+  .video { position: relative; flex: 1; margin: 3%; border-radius: 8px; overflow: hidden; background: radial-gradient(120% 90% at 50% 20%, #3a2c5c, #16121f 70%); }
+  .video .floor { position: absolute; inset: auto 0 0 0; height: 22%; background: linear-gradient(transparent, rgba(255,255,255,.06)); }
+  .video .player { position: absolute; left: 4%; right: 4%; bottom: 5%; display: flex; align-items: center; gap: 4%; }
+  .video .player b { width: 0; height: 0; border-left: 8px solid #fff; border-top: 5px solid transparent; border-bottom: 5px solid transparent; }
+  .video .player span { flex: 1; height: 3px; border-radius: 2px; background: rgba(255,255,255,.25); position: relative; }
+  .video .player span::after { content: ""; position: absolute; inset: 0 62% 0 0; border-radius: 2px; background: #ff4d6d; }
+  .video .title { position: absolute; left: 4%; top: 6%; font-size: 11px; font-weight: 600; color: rgba(255,255,255,.85); }
+
+  /* Mirror display */
+  .mirror { position: relative; height: 100%; background: radial-gradient(130% 100% at 50% 10%, #f3ede6, #d9cfc4 75%); }
+  .mirror .room-floor { position: absolute; inset: auto 0 0 0; height: 24%; background: linear-gradient(#cbbfb2, #bfb2a4); }
+  .mirror .split { position: absolute; inset: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 2px; background: #0d0d0f; }
+  .mirror .split > div { position: relative; overflow: hidden; background: radial-gradient(130% 100% at 50% 10%, #f3ede6, #d9cfc4 75%); }
+  .pill {
+    position: absolute; display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 99px;
+    font-size: 10.5px; font-weight: 650; color: #fff; white-space: nowrap;
+    background: rgba(40, 32, 28, .38); backdrop-filter: blur(10px) saturate(160%); -webkit-backdrop-filter: blur(10px) saturate(160%);
+    box-shadow: inset 0 0 0 0.5px rgba(255,255,255,.35), 0 4px 14px -6px rgba(0,0,0,.4);
+  }
+  .pill .dot { width: 6px; height: 6px; border-radius: 50%; background: #34c759; }
+  .pill.rec { background: rgba(230, 40, 40, .6); }
+  .pill.rec .dot { background: #fff; animation: blink 1.2s ease-in-out infinite; }
+  .glassbar {
+    position: absolute; left: 50%; bottom: 6%; transform: translateX(-50%); display: flex; gap: 6px; padding: 5px;
+    border-radius: 99px; background: rgba(255,255,255,.28); backdrop-filter: blur(12px) saturate(170%); -webkit-backdrop-filter: blur(12px) saturate(170%);
+    box-shadow: inset 0 0 0 0.5px rgba(255,255,255,.6), 0 10px 24px -12px rgba(0,0,0,.45);
+  }
+  .glassbar i { display: block; height: 16px; border-radius: 99px; background: rgba(255,255,255,.55); }
+  .glassbar i.w1 { width: 16px; } .glassbar i.w2 { width: 44px; } .glassbar i.rec { width: 30px; background: linear-gradient(90deg, var(--accent-2), var(--accent)); }
+
+  /* Dancer figure (SVG) */
+  .dancer { position: absolute; left: 50%; bottom: 13%; height: 62%; transform-origin: 50% 100%; }
+  .dancer.mirrored { transform: translateX(-50%) scaleX(-1); }
+  .dancer:not(.mirrored) { transform: translateX(-50%); }
+  .dancer svg { height: 100%; width: auto; overflow: visible; }
+  .groove svg { animation: groove 1.6s cubic-bezier(.45, 0, .55, 1) infinite; transform-origin: 50% 100%; }
+  .groove.late svg { animation-delay: -0.55s; }
+
+  /* Phone on a mini tripod */
+  .phone-rig { position: absolute; left: 50%; bottom: -26px; transform: translateX(-50%); z-index: 3; display: flex; flex-direction: column; align-items: center; }
+  .phone {
+    width: 132px; height: 64px; border-radius: 14px; background: linear-gradient(160deg, #3b3d44, #1c1d22);
+    box-shadow: inset 0 0 0 1.5px rgba(255,255,255,.12), 0 18px 30px -14px rgba(0,0,0,.55); position: relative;
+  }
+  .phone .lens { position: absolute; right: 16px; top: 50%; width: 22px; height: 22px; margin-top: -11px; border-radius: 50%; background: radial-gradient(circle at 35% 35%, #5b7aa8, #10141c 60%); box-shadow: 0 0 0 3px #2b2d33, 0 0 0 4px rgba(255,255,255,.1); }
+  .phone .lens2 { position: absolute; right: 46px; top: 50%; width: 12px; height: 12px; margin-top: -6px; border-radius: 50%; background: radial-gradient(circle at 35% 35%, #5b7aa8, #10141c 60%); box-shadow: 0 0 0 2px #2b2d33; }
+  .phone .cable { position: absolute; left: -46px; top: 50%; width: 46px; height: 4px; margin-top: -2px; border-radius: 2px; background: linear-gradient(90deg, transparent, #d9d6d2); }
+  .tripod { width: 6px; height: 30px; background: #8d8a86; }
+  .tripod-legs { width: 74px; height: 8px; border-radius: 4px; background: #77736f; }
+
+  /* ---------- Numbered strip ---------- */
+  .strip { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0; margin: 110px auto 0; max-width: 1040px; border-top: 1px solid var(--line); }
+  .strip > div { padding: 26px 26px 0; border-left: 1px solid var(--line-2); }
+  .strip > div:first-child { border-left: 0; padding-left: 0; }
+  .strip .idx { font: 600 13px/1 ui-rounded, -apple-system, sans-serif; color: var(--accent); letter-spacing: .04em; }
+  .strip h3 { margin-top: 10px; font-size: 19px; font-weight: 700; }
+  .strip p { margin-top: 4px; color: var(--ink-2); font-size: 15px; }
+
+  /* ---------- Sections ---------- */
+  .sec { padding: 150px 0 0; }
+  .sec-head { max-width: 760px; margin-bottom: 56px; }
+  .sec-head.center { margin-left: auto; margin-right: auto; text-align: center; }
+  .kicker { margin-bottom: 14px; font-size: 15px; font-weight: 600; color: var(--accent); }
+  .sec h2 { font-size: clamp(32px, 4.6vw, 54px); font-weight: 800; line-height: 1.18; letter-spacing: -0.01em; text-wrap: balance; }
+  .sec-head p { margin-top: 18px; font-size: 18px; color: var(--ink-2); text-wrap: pretty; }
+
+  .cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+  .card { background: var(--bg-soft); border-radius: 26px; padding: 30px 28px; border: 1px solid var(--line-2); }
+  .card .num {
+    display: inline-grid; place-items: center; width: 34px; height: 34px; border-radius: 50%;
+    background: var(--accent-soft); color: var(--accent); font-weight: 700; font-size: 15px; margin-bottom: 18px;
+  }
+  .card h3 { font-size: 20px; font-weight: 700; margin-bottom: 8px; }
+  .card p { color: var(--ink-2); font-size: 15.5px; }
+
+  .feature { display: grid; grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr); gap: 72px; align-items: center; margin-top: 120px; }
+  .feature:first-of-type { margin-top: 0; }
+  .feature.flip .feat-copy { order: 2; }
+  .feature-label { display: flex; align-items: center; gap: 8px; margin-bottom: 14px; font-size: 14px; font-weight: 600; color: var(--ink-3); }
+  .feature-label svg { width: 20px; height: 20px; flex: none; color: var(--accent); }
+  .feat-copy h3 { font-size: clamp(28px, 3.2vw, 40px); font-weight: 800; line-height: 1.2; margin-bottom: 16px; text-wrap: balance; }
+  .feat-copy p { font-size: 17px; color: var(--ink-2); line-height: 1.75; text-wrap: pretty; }
+  .feat-visual { position: relative; border-radius: 28px; background: var(--bg-soft); border: 1px solid var(--line-2); padding: 34px; overflow: hidden; }
+  .feat-visual .screen { aspect-ratio: 16 / 10; }
+
+  /* Recordings mock */
+  .rec-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+  .rec-card .thumb { position: relative; aspect-ratio: 4 / 3; border-radius: 14px; overflow: hidden; background: radial-gradient(130% 100% at 50% 10%, #f3ede6, #d4c9bd 75%); box-shadow: 0 10px 24px -14px rgba(0,0,0,.35); }
+  .rec-card .thumb .dancer { height: 70%; }
+  .rec-card .tag { position: absolute; left: 8px; top: 8px; font-size: 10.5px; font-weight: 700; color: #fff; padding: 2px 8px; border-radius: 99px; background: rgba(0,0,0,.45); }
+  .rec-card .tag.replay { background: linear-gradient(100deg, var(--accent-2), var(--accent)); }
+  .rec-card .dur { position: absolute; right: 8px; bottom: 8px; font-size: 10.5px; font-weight: 700; color: #fff; padding: 2px 7px; border-radius: 99px; background: rgba(0,0,0,.5); font-variant-numeric: tabular-nums; }
+  .rec-card h4 { margin-top: 9px; font-size: 14px; font-weight: 700; }
+  .rec-card small { color: var(--ink-3); font-size: 12px; }
+  .save-btn { position: relative; margin: 20px auto 0; width: max-content; display: flex; align-items: center; gap: 8px; padding: 10px 16px; border-radius: 99px; font-size: 14px; font-weight: 650; background: rgba(255,255,255,.7); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); box-shadow: inset 0 0 0 .5px rgba(255,255,255,.8), 0 14px 30px -14px rgba(0,0,0,.4); color: #1b1714; }
+
+  /* App window mock */
+  .appwin { border-radius: 16px; overflow: hidden; display: grid; grid-template-columns: 26% 1fr; aspect-ratio: 16 / 10.5; background: #fbfaf9; box-shadow: 0 40px 70px -40px rgba(40,10,5,.5), 0 0 0 1px rgba(0,0,0,.08); }
+  .appwin .side { background: #efedea; padding: 12px 10px; display: flex; flex-direction: column; gap: 6px; font-size: 11px; color: #3d3935; }
+  .appwin .lights { display: flex; gap: 5px; margin-bottom: 12px; }
+  .appwin .lights i { width: 8px; height: 8px; border-radius: 50%; background: #d6d2ce; }
+  .appwin .item { padding: 5px 8px; border-radius: 7px; }
+  .appwin .item.on { background: rgba(0,0,0,.07); font-weight: 650; }
+  .appwin .dev { margin-top: auto; padding: 9px; border-radius: 12px; background: rgba(255,255,255,.75); box-shadow: inset 0 0 0 .5px rgba(0,0,0,.08); }
+  .appwin .dev b { display: block; font-size: 11px; }
+  .appwin .dev span { font-size: 9.5px; color: #6f6a65; }
+  .appwin .main { position: relative; padding: 34px 10px 10px; }
+  .appwin .main .tb { position: absolute; top: 8px; left: 12px; right: 10px; display: flex; justify-content: space-between; align-items: center; font-size: 11px; font-weight: 650; color: #6f6a65; }
+  .appwin .main .tb span:last-child { padding: 3px 10px; border-radius: 99px; background: rgba(0,0,0,.06); color: #3d3935; }
+  .appwin .preview { position: relative; height: 100%; border-radius: 12px; overflow: hidden; background: radial-gradient(130% 100% at 50% 10%, #f3ede6, #d9cfc4 75%); }
+  @media (prefers-color-scheme: dark) {
+    .appwin { background: #1d1d1f; }
+    .appwin .side { background: #252527; color: #e2dfdc; }
+    .appwin .item.on { background: rgba(255,255,255,.1); }
+    .appwin .dev { background: rgba(255,255,255,.08); }
+    .appwin .dev span, .appwin .main .tb { color: #a29d98; }
+    .appwin .main .tb span:last-child { background: rgba(255,255,255,.1); color: #e2dfdc; }
+    .save-btn { background: rgba(40,40,42,.7); color: #f4f2f0; box-shadow: inset 0 0 0 .5px rgba(255,255,255,.2), 0 14px 30px -14px rgba(0,0,0,.6); }
+  }
+
+  /* More features */
+  .more { display: grid; grid-template-columns: repeat(3, 1fr); gap: 44px 40px; margin-top: 136px; padding-top: 56px; border-top: 1px solid var(--line); }
+  .more .feature-label { margin-bottom: 10px; font-size: 13px; }
+  .more h3 { font-size: 19px; font-weight: 700; margin-bottom: 6px; }
+  .more p { font-size: 15.5px; color: var(--ink-2); line-height: 1.7; }
+
+  /* FAQ */
+  .faq-grid { display: grid; grid-template-columns: 320px minmax(0, 1fr); gap: 32px 72px; align-items: start; }
+  .faq-grid .sec-head { position: sticky; top: 100px; margin-bottom: 0; }
+  .faq-list { max-width: 780px; border-top: 1px solid var(--line); }
+  .faq-list details { border-bottom: 1px solid var(--line); }
+  .faq-list summary { display: flex; align-items: center; justify-content: space-between; gap: 20px; cursor: pointer; list-style: none; padding: 20px 0; font-size: 17px; font-weight: 650; }
+  .faq-list summary::-webkit-details-marker { display: none; }
+  .faq-list summary svg { flex: none; width: 16px; height: 16px; color: var(--ink-3); transition: transform .3s var(--ease-out); }
+  .faq-list details[open] summary svg { transform: rotate(135deg); }
+  .faq-list details p { padding: 0 0 22px; font-size: 16px; color: var(--ink-2); line-height: 1.8; max-width: 42em; }
+  .faq-list details[open] p { animation: rise .5s var(--ease-out) both; }
+  .faq-list code { font: 14px ui-monospace, "SF Mono", Menlo, monospace; padding: 2px 6px; border-radius: 6px; background: var(--bg-soft); border: 1px solid var(--line-2); }
+  .faq-list a { color: var(--accent); text-decoration: underline; text-underline-offset: 3px; }
+
+  /* CTA + footer */
+  .cta { text-align: center; padding: 150px 0 140px; }
+  .cta img { width: 76px; height: 76px; margin: 0 auto 26px; filter: drop-shadow(0 14px 20px rgba(120, 30, 20, .2)); }
+  .cta h2 { font-size: clamp(32px, 4.6vw, 54px); font-weight: 800; line-height: 1.2; margin: 0 auto 38px; max-width: 900px; text-wrap: balance; }
+  footer { padding: 34px 0 48px; border-top: 1px solid var(--line-2); font-size: 13.5px; color: var(--ink-3); }
+  footer .wrap { display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+  footer nav-links, footer .links { display: flex; gap: 20px; }
+  footer a:hover { color: var(--ink); }
+
+  /* Reveal on scroll */
+  .reveal { opacity: 0; transform: translateY(24px); transition: opacity .9s var(--ease-out), transform .9s var(--ease-out); }
+  .reveal.in { opacity: 1; transform: none; }
+
+  @keyframes rise { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: none; } }
+  @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
+  @keyframes blink { 50% { opacity: .25; } }
+  @keyframes groove {
+    0%, 100% { transform: translateY(0) rotate(0); }
+    25% { transform: translateY(-3%) rotate(-4deg); }
+    50% { transform: translateY(1.5%) rotate(0); }
+    75% { transform: translateY(-3%) rotate(4deg); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation: none !important; transition: none !important; }
+    .reveal { opacity: 1; transform: none; }
+  }
+
+  /* ---------- Responsive ---------- */
+  @media (max-width: 900px) {
+    .nav-links { display: none; }
+    .desk { grid-template-columns: 1fr; }
+    .desk .monitor.left { display: none; }
+    .phone-rig { bottom: -18px; transform: translateX(-50%) scale(.8); }
+    .strip { grid-template-columns: 1fr; border-top: 0; margin-top: 80px; }
+    .strip > div { border-left: 0; border-top: 1px solid var(--line); padding: 22px 0; }
+    .cards { grid-template-columns: 1fr; }
+    .feature { grid-template-columns: 1fr; gap: 36px; margin-top: 88px; }
+    .feature.flip .feat-copy { order: 0; }
+    .feat-visual { padding: 18px; border-radius: 22px; }
+    .more { grid-template-columns: 1fr; gap: 32px; margin-top: 96px; }
+    .faq-grid { grid-template-columns: 1fr; }
+    .faq-grid .sec-head { position: static; }
+    .sec { padding-top: 110px; }
+    .cta { padding: 110px 0 100px; }
+  }
+</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <!-- The dancer from the app icon: hip-hop groove pose, backwards cap. -->
+    <symbol id="dancer" viewBox="330 220 380 580">
+      <g fill="none" stroke="currentColor" stroke-width="52" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M500,372 L522,552"/>
+        <path d="M502,410 L424,466 L462,536"/>
+        <path d="M506,408 L598,372 L640,270"/>
+        <path d="M522,552 L446,640 L420,760"/>
+        <path d="M522,552 L604,652 L628,760"/>
+        <path d="M420,762 L376,770"/>
+        <path d="M628,762 L674,770"/>
+      </g>
+      <circle cx="492" cy="300" r="50" fill="currentColor"/>
+      <path d="M438,294 A54,54 0 0 1 546,294 Z" fill="currentColor"/>
+      <path d="M448,284 L402,296" stroke="currentColor" stroke-width="22" stroke-linecap="round"/>
+    </symbol>
+    <symbol id="i-mirror" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" d="M12 3v18M8 7 4 12l4 5M16 7l4 5-4 5"/></symbol>
+    <symbol id="i-clock" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 4v4h4"/><path d="M12 8v4l3 2"/></g></symbol>
+    <symbol id="i-rec" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="12" r="4.5" fill="currentColor"/></symbol>
+    <symbol id="i-mac" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M9 20h6M12 16v4"/></g></symbol>
+    <symbol id="i-moon" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5Z"/></symbol>
+    <symbol id="i-body" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M12 8v8M9 11h6"/></g></symbol>
+    <symbol id="i-plug" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3v4M15 3v4M7 7h10v4a5 5 0 0 1-10 0V7ZM12 16v5"/></g></symbol>
+    <symbol id="i-sun" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></g></symbol>
+    <symbol id="i-mic" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></g></symbol>
+    <symbol id="i-code" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" d="m8 8-4 4 4 4M16 8l4 4-4 4M14 5l-4 14"/></symbol>
+    <symbol id="i-lock" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="5" y="10" width="14" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></g></symbol>
+    <symbol id="i-apple" viewBox="0 0 24 24"><path d="M16.37 12.62c-.02-2.2 1.8-3.27 1.88-3.32-1.03-1.5-2.62-1.7-3.18-1.73-1.35-.14-2.64.8-3.33.8-.69 0-1.74-.78-2.87-.76-1.47.02-2.83.86-3.59 2.18-1.53 2.66-.39 6.6 1.1 8.76.73 1.06 1.6 2.24 2.73 2.2 1.1-.04 1.51-.71 2.84-.71 1.32 0 1.7.71 2.86.69 1.18-.02 1.93-1.07 2.65-2.13.84-1.22 1.18-2.41 1.2-2.47-.03-.01-2.3-.88-2.32-3.5ZM14.2 6.1c.6-.73 1.01-1.75.9-2.76-.87.04-1.92.58-2.54 1.31-.56.65-1.05 1.68-.92 2.67.97.08 1.96-.49 2.56-1.22Z"/></symbol>
+    <symbol id="i-plus" viewBox="0 0 16 16"><path fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" d="M8 2v12M2 8h12"/></symbol>
+  </defs>
+</svg>
+
+<nav id="nav">
+  <div class="wrap nav-inner">
+    <a class="brand" href="#top"><img src="img/icon.png" alt="">DisplayCam</a>
+    <div class="nav-actions">
+      <div class="nav-links">
+        <a href="#setup">怎么用</a>
+        <a href="#features">功能</a>
+        <a href="#faq">常见问题</a>
+        <a href="https://github.com/Hanqing/DisplayCam">GitHub</a>
+      </div>
+      <a class="btn-nav" href="https://github.com/Hanqing/DisplayCam/releases/latest/download/DisplayCam.zip">下载</a>
+    </div>
+  </div>
+</nav>
+
+<main id="top">
+  <header class="hero">
+    <div class="wrap">
+      <div class="hero-icon"><img src="img/icon.png" alt="DisplayCam 图标" width="92" height="92"></div>
+      <h1>手机当眼睛，<em>显示器当镜子</em>。</h1>
+      <p class="tagline">家里没地方放镜子？把闲置的 Android 手机对着自己，DisplayCam 把画面实时投到 Mac 的显示器上。一边看跟练视频，一边看镜子里的自己。</p>
+      <div class="hero-cta">
+        <a class="btn" href="https://github.com/Hanqing/DisplayCam/releases/latest/download/DisplayCam.zip">
+          <svg><use href="#i-apple"/></svg>
+          <span><small>免费下载</small><b>Mac 版 DisplayCam</b></span>
+        </a>
+        <a class="link-more" href="https://github.com/Hanqing/DisplayCam">在 GitHub 查看源码</a>
+      </div>
+      <p class="requirements">需要 macOS 26 及以上（Apple 芯片）和 Android 12 及以上的手机，USB 连接</p>
+    </div>
+
+    <div class="scene" aria-hidden="true">
+      <div class="desk">
+        <div class="monitor left">
+          <div class="screen"><div class="screen-inner">
+            <div class="browser">
+              <div class="browser-bar"><i></i><i></i><i></i><span></span></div>
+              <div class="video">
+                <div class="title">Hip-hop 基础律动 · 跟练第 3 天</div>
+                <div class="floor"></div>
+                <div class="dancer groove" style="color:#ffd0a8"><svg><use href="#dancer"/></svg></div>
+                <div class="player"><b></b><span></span></div>
+              </div>
+            </div>
+          </div></div>
+          <div class="neck"></div><div class="foot"></div>
+          <p class="monitor-label">显示器 1 · 跟练视频</p>
+        </div>
+        <div class="monitor right">
+          <div class="screen"><div class="screen-inner">
+            <div class="mirror">
+              <div class="split">
+                <div><div class="room-floor"></div><div class="dancer mirrored groove" style="color:#2a2420"><svg><use href="#dancer"/></svg></div></div>
+                <div><div class="room-floor"></div><div class="dancer mirrored groove late" style="color:#2a2420"><svg><use href="#dancer"/></svg></div></div>
+              </div>
+              <span class="pill" style="left:3%;top:5%"><span class="dot"></span>实时</span>
+              <span class="pill" style="left:53%;top:5%">延迟 3.0 秒</span>
+              <span class="pill rec" style="right:3%;top:5%"><span class="dot"></span>REC 00:24</span>
+            </div>
+          </div></div>
+          <div class="neck"></div><div class="foot"></div>
+          <p class="monitor-label">显示器 2 · DisplayCam 镜子</p>
+        </div>
+      </div>
+      <div class="phone-rig">
+        <div class="phone"><span class="cable"></span><span class="lens2"></span><span class="lens"></span></div>
+        <div class="tripod"></div><div class="tripod-legs"></div>
+      </div>
+    </div>
+
+    <div class="wrap">
+      <div class="strip">
+        <div><span class="idx">01</span><h3>实时镜像</h3><p>USB 直连，画面跟得上你的动作</p></div>
+        <div><span class="idx">02</span><h3>延迟回放</h3><p>跳完回头，看清刚才的自己</p></div>
+        <div><span class="idx">03</span><h3>一键录制</h3><p>好动作，随手存下来</p></div>
+      </div>
+    </div>
+  </header>
+
+  <section class="sec" id="setup">
+    <div class="wrap">
+      <div class="sec-head reveal">
+        <p class="kicker">怎么用</p>
+        <h2>两台显示器，一面镜子。</h2>
+        <p>不用在墙上装镜子，也不用买新设备。一台旧手机、一根线就够了。</p>
+      </div>
+      <div class="cards">
+        <div class="card reveal"><span class="num">1</span><h3>一台放跟练视频</h3><p>浏览器打开你的跟练视频，照常播放。</p></div>
+        <div class="card reveal"><span class="num">2</span><h3>一台变成镜子</h3><p>DisplayCam 在另一台显示器上全屏显示你的画面，像镜子一样左右翻转。</p></div>
+        <div class="card reveal"><span class="num">3</span><h3>旧手机当摄像头</h3><p>手机横放、后置镜头对着你，用 USB 线连到 Mac，插上就开始。</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec" id="features">
+    <div class="wrap">
+      <div class="sec-head reveal">
+        <p class="kicker">功能</p>
+        <h2>专为跟练设计。</h2>
+      </div>
+
+      <div class="feature reveal">
+        <div class="feat-copy">
+          <p class="feature-label"><svg><use href="#i-mirror"/></svg>镜像</p>
+          <h3>像真镜子一样。</h3>
+          <p>画面左右翻转：你抬右手，镜子里也是右手。旋转、铺满或完整显示，一键调整，手机怎么摆都行。</p>
+        </div>
+        <div class="feat-visual">
+          <div class="screen"><div class="screen-inner"><div class="mirror">
+            <div class="room-floor"></div>
+            <div class="dancer mirrored groove" style="color:#2a2420"><svg><use href="#dancer"/></svg></div>
+            <span class="pill" style="left:3%;top:5%"><span class="dot"></span>1920×1440 · 30 fps</span>
+            <div class="glassbar"><i class="w1"></i><i class="w1"></i><i class="w2"></i><i class="rec"></i></div>
+          </div></div></div>
+        </div>
+      </div>
+
+      <div class="feature flip reveal">
+        <div class="feat-copy">
+          <p class="feature-label"><svg><use href="#i-clock"/></svg>延迟回放</p>
+          <h3>跳完，回头看。</h3>
+          <p>延迟回放把几秒前的你放给你看，1 到 15 秒随时调。分屏模式左边实时、右边延迟，转个头就能检查刚才那个八拍。</p>
+        </div>
+        <div class="feat-visual">
+          <div class="screen"><div class="screen-inner"><div class="mirror">
+            <div class="split">
+              <div><div class="room-floor"></div><div class="dancer mirrored groove" style="color:#2a2420"><svg><use href="#dancer"/></svg></div></div>
+              <div><div class="room-floor"></div><div class="dancer mirrored groove late" style="color:#2a2420"><svg><use href="#dancer"/></svg></div></div>
+            </div>
+            <span class="pill" style="left:3%;top:5%">实时</span>
+            <span class="pill" style="left:53%;top:5%">延迟 3.0 秒</span>
+          </div></div></div>
+        </div>
+      </div>
+
+      <div class="feature reveal">
+        <div class="feat-copy">
+          <p class="feature-label"><svg><use href="#i-rec"/></svg>录制</p>
+          <h3>好动作，存下来。</h3>
+          <p>随时开始录制。或者跳完一段觉得不错，点「保存刚才 15 秒」，把已经发生的那段存成视频。手机麦克风同时录下音乐，录像按时间整理在 App 里。</p>
+        </div>
+        <div class="feat-visual">
+          <div class="rec-grid">
+            <div class="rec-card"><div class="thumb"><span class="tag replay">回放</span><div class="dancer mirrored" style="color:#2a2420"><svg><use href="#dancer"/></svg></div><span class="dur">00:15</span></div><h4>刚刚</h4><small>今天 21:42 · 14 MB</small></div>
+            <div class="rec-card"><div class="thumb"><span class="tag">练习</span><div class="dancer mirrored" style="color:#2a2420;transform:translateX(-50%) scaleX(-1) rotate(-6deg)"><svg><use href="#dancer"/></svg></div><span class="dur">03:28</span></div><h4>8 分钟前</h4><small>今天 21:34 · 196 MB</small></div>
+          </div>
+          <span class="save-btn"><svg width="16" height="16"><use href="#i-clock"/></svg>保存刚才 15 秒</span>
+        </div>
+      </div>
+
+      <div class="feature flip reveal">
+        <div class="feat-copy">
+          <p class="feature-label"><svg><use href="#i-mac"/></svg>原生体验</p>
+          <h3>为 macOS 26 打造。</h3>
+          <p>Liquid Glass 设计，原生 SwiftUI。菜单栏随手控制，快捷键切换视图和录制。录像直接保存手机传来的视频，不重新编码，几乎不占电脑性能。</p>
+        </div>
+        <div class="feat-visual">
+          <div class="appwin">
+            <div class="side">
+              <div class="lights"><i></i><i></i><i></i></div>
+              <div class="item on">镜子</div>
+              <div class="item">录像</div>
+              <div class="dev"><b>Android 手机</b><span>● 已连接 · 82%</span></div>
+            </div>
+            <div class="main">
+              <div class="tb"><span>镜子</span><span>打开镜子</span></div>
+              <div class="preview">
+                <div class="room-floor" style="position:absolute;inset:auto 0 0 0;height:24%;background:linear-gradient(#cbbfb2,#bfb2a4)"></div>
+                <div class="dancer mirrored groove" style="color:#2a2420"><svg><use href="#dancer"/></svg></div>
+                <div class="glassbar"><i class="w1"></i><i class="w1"></i><i class="w2"></i><i class="rec"></i></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="more">
+        <div class="reveal"><p class="feature-label"><svg><use href="#i-moon"/></svg>息屏可用</p><h3>手机锁着屏也能拍</h3><p>手机息屏、锁屏照样出画面，不用一直亮着屏幕。</p></div>
+        <div class="reveal"><p class="feature-label"><svg><use href="#i-body"/></svg>4:3 画面</p><h3>小房间也能拍全身</h3><p>手机横放时用 4:3 画面，上下视野更大，头和脚都在画面里。</p></div>
+        <div class="reveal"><p class="feature-label"><svg><use href="#i-plug"/></svg>插上就连</p><h3>不用点来点去</h3><p>连上手机自动开始，断开后自动重连。改设置时一秒左右就恢复画面。</p></div>
+        <div class="reveal"><p class="feature-label"><svg><use href="#i-sun"/></svg>屏幕常亮</p><h3>跳舞时屏幕不会黑</h3><p>镜子显示的时候，Mac 屏幕不会因为没碰键盘而自动休眠。</p></div>
+        <div class="reveal"><p class="feature-label"><svg><use href="#i-mic"/></svg>同步录音</p><h3>录下音乐和节拍</h3><p>录像带上手机麦克风的声音，回看时动作和音乐对得上。</p></div>
+        <div class="reveal"><p class="feature-label"><svg><use href="#i-code"/></svg>源码公开</p><h3>免费，代码公开</h3><p>源码在 GitHub。手机端基于开源项目 scrcpy，手机上不用装任何 App。</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec" id="faq">
+    <div class="wrap faq-grid">
+      <div class="sec-head">
+        <p class="kicker">开始之前</p>
+        <h2>常见问题</h2>
+      </div>
+      <div class="faq-list">
+        <details open>
+          <summary>需要什么样的手机？<svg><use href="#i-plus"/></svg></summary>
+          <p>Android 12 或更高版本、摄像头能正常用的手机就可以，屏幕碎了也没关系。iPhone 暂不支持。</p>
+        </details>
+        <details>
+          <summary>怎么打开 USB 调试？<svg><use href="#i-plus"/></svg></summary>
+          <p>在手机「设置 › 关于手机」里连续点「版本号」7 次，打开开发者选项；再到「开发者选项」里打开「USB 调试」。不同品牌的位置略有不同。第一次连 Mac 时，手机上会问「允许 USB 调试吗？」，勾选「始终允许」后点确定。</p>
+        </details>
+        <details>
+          <summary>还需要装别的东西吗？<svg><use href="#i-plus"/></svg></summary>
+          <p>Mac 上需要 adb（Android 平台工具），装了 Homebrew 的话运行 <code>brew install --cask android-platform-tools</code> 即可。手机上不需要装任何 App。</p>
+        </details>
+        <details>
+          <summary>第一次打开时提示「无法验证开发者」？<svg><use href="#i-plus"/></svg></summary>
+          <p>DisplayCam 目前没有经过 Apple 公证。先尝试打开一次，然后到「系统设置 › 隐私与安全性」，在页面下方点「仍要打开」。也可以下载源码自己编译。</p>
+        </details>
+        <details>
+          <summary>录像存在哪里？<svg><use href="#i-plus"/></svg></summary>
+          <p>默认在「影片 › DisplayCam」文件夹，可以在设置里修改。文件是标准 MP4，任何播放器都能打开，也能直接发给朋友。</p>
+        </details>
+        <details>
+          <summary>画面会上传到网上吗？<svg><use href="#i-plus"/></svg></summary>
+          <p>不会。画面只通过 USB 线从手机传到你的 Mac，不经过任何服务器，也不需要联网。</p>
+        </details>
+        <details>
+          <summary>可以无线连接吗？<svg><use href="#i-plus"/></svg></summary>
+          <p>目前只支持 USB。有线连接延迟最低，手机还能一边用一边充电。</p>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <section class="cta">
+    <div class="wrap reveal">
+      <img src="img/icon.png" alt="">
+      <h2>今晚就把旧手机用起来。</h2>
+      <div class="hero-cta">
+        <a class="btn" href="https://github.com/Hanqing/DisplayCam/releases/latest/download/DisplayCam.zip">
+          <svg><use href="#i-apple"/></svg>
+          <span><small>免费下载</small><b>Mac 版 DisplayCam</b></span>
+        </a>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>© 2026 DisplayCam · 手机端组件来自 <a href="https://github.com/Genymobile/scrcpy">scrcpy</a>（Apache 2.0）</span>
+    <span class="links">
+      <a href="https://github.com/Hanqing/DisplayCam">GitHub</a>
+      <a href="https://github.com/Hanqing/DisplayCam/releases">版本记录</a>
+      <a href="https://github.com/Hanqing/DisplayCam/issues">反馈问题</a>
+    </span>
+  </div>
+</footer>
+
+<script>
+  // Nav border + download button once the hero CTA scrolls away.
+  const nav = document.getElementById('nav');
+  const onScroll = () => nav.classList.toggle('scrolled', window.scrollY > 320);
+  onScroll();
+  window.addEventListener('scroll', onScroll, { passive: true });
+
+  // Reveal sections as they enter the viewport.
+  const io = 'IntersectionObserver' in window ? new IntersectionObserver((entries) => {
+    for (const e of entries) if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); }
+  }, { rootMargin: '0px 0px -10% 0px' }) : null;
+  document.querySelectorAll('.reveal').forEach((el) => io ? io.observe(el) : el.classList.add('in'));
+</script>
+</body>
+</html>

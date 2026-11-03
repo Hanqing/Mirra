@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024" >
+<defs>
+  <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+    <stop offset="0" stop-color="#FFFFFF"/><stop offset="1" stop-color="#E7E6E2"/>
+  </linearGradient>
+  <linearGradient id="frame" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#FFB066"/><stop offset="1" stop-color="#E8304F"/>
+  </linearGradient>
+  <linearGradient id="mirror" x1="0.2" y1="0" x2="0.8" y2="1">
+    <stop offset="0" stop-color="#FF9A3C"/><stop offset="1" stop-color="#FF3D5E"/>
+  </linearGradient>
+  <linearGradient id="streak" x1="0" y1="0" x2="1" y2="0">
+    <stop offset="0" stop-color="#fff" stop-opacity="0"/>
+    <stop offset=".5" stop-color="#fff" stop-opacity=".9"/>
+    <stop offset="1" stop-color="#fff" stop-opacity="0"/>
+  </linearGradient>
+  <radialGradient id="lens" cx=".38" cy=".35" r=".75">
+    <stop offset="0" stop-color="#3A4A66"/><stop offset=".55" stop-color="#121722"/><stop offset="1" stop-color="#05070B"/>
+  </radialGradient>
+  <clipPath id="innerClip"><path d="M316,354.0 A196.0,196.0 0 0 1 708,354.0 V840 Q708,870 678,870 H346 Q316,870 316,840 Z"/></clipPath>
+  <filter id="soft" x="-30%" y="-30%" width="160%" height="160%">
+    <feGaussianBlur stdDeviation="22"/>
+  </filter>
+  <filter id="deboss" x="-10%" y="-10%" width="120%" height="120%">
+    <feGaussianBlur in="SourceAlpha" stdDeviation="2.5" result="b"/>
+    <feOffset dx="0" dy="3" result="o"/>
+    <feComposite in="o" in2="SourceAlpha" operator="out" result="shadowOut"/>
+    <feFlood flood-color="#fff" flood-opacity=".9"/>
+    <feComposite in2="shadowOut" operator="in" result="hi"/>
+    <feOffset in="SourceAlpha" dx="0" dy="-2" result="o2"/>
+    <feGaussianBlur in="o2" stdDeviation="2" result="b2"/>
+    <feComposite in="SourceGraphic" in2="SourceGraphic"/>
+    <feMerge><feMergeNode in="SourceGraphic"/><feMergeNode in="hi"/></feMerge>
+  </filter>
+</defs><path d="M-20,892 C200,848 340,936 512,892 S820,848 1044,892" transform="translate(0 4)" fill="none" stroke="#FFFFFF" stroke-width="20" stroke-linecap="round"/><path d="M-20,892 C200,848 340,936 512,892 S820,848 1044,892" fill="none" stroke="#DCDBD6" stroke-width="18" stroke-linecap="round"/><path d="M-20,892 C200,848 340,936 512,892 S820,848 1044,892" transform="translate(0 -3)" fill="none" stroke="#C9C8C2" stroke-width="8" stroke-linecap="round" opacity=".55"/><path d="M-20,956 C200,920 340,992 512,956 S820,920 1044,956" transform="translate(0 4)" fill="none" stroke="#FFFFFF" stroke-width="20" stroke-linecap="round"/><path d="M-20,956 C200,920 340,992 512,956 S820,920 1044,956" fill="none" stroke="#DCDBD6" stroke-width="18" stroke-linecap="round"/><path d="M-20,956 C200,920 340,992 512,956 S820,920 1044,956" transform="translate(0 -3)" fill="none" stroke="#C9C8C2" stroke-width="8" stroke-linecap="round" opacity=".55"/></svg>
