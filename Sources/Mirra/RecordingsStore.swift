@@ -14,7 +14,7 @@ struct Recording: Identifiable, Hashable {
     var title: String { url.deletingPathExtension().lastPathComponent }
 }
 
-/// The recordings folder (default ~/Movies/DisplayCam): listing, thumbnails, durations.
+/// The recordings folder (default ~/Movies/Mirra): listing, thumbnails, durations.
 @MainActor
 final class RecordingsStore: ObservableObject {
     nonisolated static let practicePrefix = "练习"
@@ -34,7 +34,7 @@ final class RecordingsStore: ObservableObject {
         let saved = UserDefaults.standard.string(forKey: "recordingsFolder")
         folder = saved.map { URL(fileURLWithPath: $0) }
             ?? FileManager.default.urls(for: .moviesDirectory, in: .userDomainMask)[0]
-                .appendingPathComponent("DisplayCam", isDirectory: true)
+                .appendingPathComponent("Mirra", isDirectory: true)
     }
 
     func newFileURL(kind: Recording.Kind) -> URL {

@@ -131,7 +131,7 @@ final class StreamSession {
 
     func start() {
         let thread = Thread { [self] in run() }
-        thread.name = "DisplayCam.stream"
+        thread.name = "Mirra.stream"
         thread.qualityOfService = .userInteractive
         thread.start()
     }
@@ -283,7 +283,7 @@ extension StreamSession {
             }
             audioConnection.close()
         }
-        thread.name = "DisplayCam.audio"
+        thread.name = "Mirra.audio"
         thread.qualityOfService = .userInitiated
         thread.start()
     }

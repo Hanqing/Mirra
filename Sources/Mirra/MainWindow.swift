@@ -310,7 +310,7 @@ struct ConnectGuide: View {
         case .connecting: return "正在启动摄像头，通常只要一两秒。"
         case .unauthorized: return "手机上弹出了「允许 USB 调试吗？」，点「允许」就能开始。"
         case .error(let message): return message
-        case .noADB: return "DisplayCam 通过 adb 和手机通信。在终端运行下面的命令安装，然后重新打开 App。"
+        case .noADB: return "Mirra 通过 adb 和手机通信。在终端运行下面的命令安装，然后重新打开 App。"
         default: return "用 USB 线连上一台 Android 手机，摄像头的画面会实时显示在你的显示器上。"
         }
     }

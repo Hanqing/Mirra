@@ -1,11 +1,16 @@
 import AppKit
 
-/// Development self-test, enabled with DISPLAYCAM_SELFTEST=<output dir>.
+/// Development self-test, enabled with MIRRA_SELFTEST=<output dir>.
 /// Exercises recording and saves snapshots of the app's own windows.
 @MainActor
 enum SelfTest {
     static func runIfRequested(_ model: AppModel) {
-        guard let dir = ProcessInfo.processInfo.environment["DISPLAYCAM_SELFTEST"] else { return }
+        if ProcessInfo.processInfo.environment["MIRRA_UPDATE_TEST"] != nil {
+            // Stage an update from MIRRA_FEED_URL, then quit so Sparkle installs it.
+            UpdateController.shared.checkInBackgroundForTesting()
+            DispatchQueue.main.asyncAfter(deadline: .now() + 25) { NSApp.terminate(nil) }
+        }
+        guard let dir = ProcessInfo.processInfo.environment["MIRRA_SELFTEST"] else { return }
         func at(_ t: Double, _ block: @escaping @MainActor () -> Void) {
             DispatchQueue.main.asyncAfter(deadline: .now() + t) { MainActor.assumeIsolated(block) }
         }

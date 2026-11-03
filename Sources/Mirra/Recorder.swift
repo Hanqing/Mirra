@@ -22,7 +22,7 @@ final class Recorder {
     private let realtime: Bool
     private let videoOffset: Double
     private let audioOffset: Double
-    private let queue = DispatchQueue(label: "DisplayCam.recorder", qos: .userInitiated)
+    private let queue = DispatchQueue(label: "Mirra.recorder", qos: .userInitiated)
 
     // Only touched on `queue`.
     private var startTime: CMTime?

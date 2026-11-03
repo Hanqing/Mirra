@@ -2,12 +2,18 @@ import AppKit
 import SwiftUI
 
 @main
-struct DisplayCamApp: App {
+struct MirraApp: App {
     @NSApplicationDelegateAdaptor(AppDelegate.self) private var delegate
-    @ObservedObject private var model = AppModel.shared
+    @ObservedObject private var model: AppModel
+    @ObservedObject private var updates = UpdateController.shared
+
+    init() {
+        SettingsMigration.run()  // before AppModel reads its settings
+        _model = ObservedObject(wrappedValue: AppModel.shared)
+    }
 
     var body: some Scene {
-        Window("DisplayCam", id: "main") {
+        Window("Mirra", id: "main") {
             RootView()
                 .environmentObject(model)
         }
@@ -15,6 +21,10 @@ struct DisplayCamApp: App {
         .windowToolbarStyle(.unified)
         .commands {
             CommandGroup(replacing: .newItem) {}
+            CommandGroup(after: .appInfo) {
+                Button("检查更新…") { updates.checkForUpdates() }
+                    .disabled(!updates.canCheckForUpdates)
+            }
             CommandMenu("镜子") {
                 Button(model.mirrorWindowOpen ? "关闭镜子窗口" : "打开镜子窗口") { model.toggleMirrorWindow() }
                     .keyboardShortcut("m", modifiers: [.command, .shift])
@@ -40,6 +50,7 @@ struct DisplayCamApp: App {
         Settings {
             SettingsView()
                 .environmentObject(model)
+                .environmentObject(updates)
         }
 
         MenuBarExtra {
@@ -96,12 +107,30 @@ struct MenuContent: View {
         Button("保存刚才 \(model.replaySeconds) 秒") { model.saveReplay() }
             .disabled(!model.isStreaming)
         Divider()
-        Button("打开 DisplayCam…") {
+        Button("打开 Mirra…") {
             openWindow(id: "main")
             NSApp.activate()
         }
         SettingsLink { Text("设置…") }
-        Button("退出 DisplayCam") { NSApp.terminate(nil) }
+        Button("检查更新…") { UpdateController.shared.checkForUpdates() }
+            .disabled(!UpdateController.shared.canCheckForUpdates)
+        Button("退出 Mirra") { NSApp.terminate(nil) }
             .keyboardShortcut("q")
+    }
+}
+
+/// Carries settings over from the app's previous name (DisplayCam).
+enum SettingsMigration {
+    static func run() {
+        let defaults = UserDefaults.standard
+        guard !defaults.bool(forKey: "migratedFromDisplayCam"),
+              let old = UserDefaults(suiteName: "com.hanqing.DisplayCam") else { return }
+        let keys = ["camera", "size", "cameraFPS", "bitrate", "zoom", "recordAudio", "mirror", "rotation", "fill",
+                    "viewMode", "delay", "replaySeconds", "recordMirrored", "openMirrorOnLaunch", "displayID",
+                    "recordingsFolder"]
+        for key in keys where defaults.object(forKey: key) == nil {
+            if let value = old.object(forKey: key) { defaults.set(value, forKey: key) }
+        }
+        defaults.set(true, forKey: "migratedFromDisplayCam")
     }
 }

@@ -1,35 +1,35 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024" >
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024">
 <defs>
-  <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
-    <stop offset="0" stop-color="#FFFFFF"/><stop offset="1" stop-color="#E7E6E2"/>
+  <linearGradient id="bg" x1="0.15" y1="0" x2="0.85" y2="1">
+    <stop offset="0" stop-color="#FFA25E"/>
+    <stop offset=".5" stop-color="#FF6A5C"/>
+    <stop offset="1" stop-color="#E8336A"/>
   </linearGradient>
-  <linearGradient id="frame" x1="0" y1="0" x2="0" y2="1">
-    <stop offset="0" stop-color="#FFB066"/><stop offset="1" stop-color="#E8304F"/>
+  <radialGradient id="glow" cx=".28" cy=".18" r=".7">
+    <stop offset="0" stop-color="#fff" stop-opacity=".35"/>
+    <stop offset="1" stop-color="#fff" stop-opacity="0"/>
+  </radialGradient>
+  <linearGradient id="pane" x1="0" y1="0" x2="1" y2="1">
+    <stop offset="0" stop-color="#fff" stop-opacity=".42"/>
+    <stop offset=".55" stop-color="#fff" stop-opacity=".16"/>
+    <stop offset="1" stop-color="#fff" stop-opacity=".26"/>
   </linearGradient>
-  <linearGradient id="mirror" x1="0.2" y1="0" x2="0.8" y2="1">
-    <stop offset="0" stop-color="#FF9A3C"/><stop offset="1" stop-color="#FF3D5E"/>
-  </linearGradient>
-  <linearGradient id="streak" x1="0" y1="0" x2="1" y2="0">
+  <linearGradient id="sheen" x1="0" y1="0" x2="1" y2="0">
     <stop offset="0" stop-color="#fff" stop-opacity="0"/>
-    <stop offset=".5" stop-color="#fff" stop-opacity=".9"/>
+    <stop offset=".5" stop-color="#fff" stop-opacity=".55"/>
     <stop offset="1" stop-color="#fff" stop-opacity="0"/>
   </linearGradient>
-  <radialGradient id="lens" cx=".38" cy=".35" r=".75">
-    <stop offset="0" stop-color="#3A4A66"/><stop offset=".55" stop-color="#121722"/><stop offset="1" stop-color="#05070B"/>
-  </radialGradient>
-  <clipPath id="innerClip"><path d="M316,354.0 A196.0,196.0 0 0 1 708,354.0 V840 Q708,870 678,870 H346 Q316,870 316,840 Z"/></clipPath>
-  <filter id="soft" x="-30%" y="-30%" width="160%" height="160%">
-    <feGaussianBlur stdDeviation="22"/>
+  <linearGradient id="figure" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#FFFFFF"/>
+    <stop offset="1" stop-color="#FFF1EA"/>
+  </linearGradient>
+  <clipPath id="paneClip"><path d="M584,168 H808 Q872,168 872,232 V804 Q872,868 808,868 H584 Q520,868 520,804 V232 Q520,168 584,168 Z"/></clipPath>
+  <filter id="blur6" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="2.5"/></filter>
+  <filter id="soft" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="18"/></filter>
+  <filter id="figShadow" x="-20%" y="-20%" width="140%" height="140%">
+    <feGaussianBlur in="SourceAlpha" stdDeviation="14"/><feOffset dy="14"/>
+    <feComponentTransfer><feFuncA type="linear" slope=".22"/></feComponentTransfer>
+    <feFlood flood-color="#7A0F2A"/><feComposite in2="SourceGraphic" operator="in"/>
+    <feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge>
   </filter>
-  <filter id="deboss" x="-10%" y="-10%" width="120%" height="120%">
-    <feGaussianBlur in="SourceAlpha" stdDeviation="2.5" result="b"/>
-    <feOffset dx="0" dy="3" result="o"/>
-    <feComposite in="o" in2="SourceAlpha" operator="out" result="shadowOut"/>
-    <feFlood flood-color="#fff" flood-opacity=".9"/>
-    <feComposite in2="shadowOut" operator="in" result="hi"/>
-    <feOffset in="SourceAlpha" dx="0" dy="-2" result="o2"/>
-    <feGaussianBlur in="o2" stdDeviation="2" result="b2"/>
-    <feComposite in="SourceGraphic" in2="SourceGraphic"/>
-    <feMerge><feMergeNode in="SourceGraphic"/><feMergeNode in="hi"/></feMerge>
-  </filter>
-</defs><g opacity="1.0" ><g fill="none" stroke="#FFFFFF" stroke-width="52" stroke-linecap="round" stroke-linejoin="round"><path d="M500,372 L522,552" /><path d="M502,410 L424,466 L462,536" /><path d="M506,408 L598,372 L640,270" /><path d="M522,552 L446,640 L420,760" /><path d="M522,552 L604,652 L628,760" /><path d="M420,762 L376,770" /><path d="M628,762 L674,770" /></g><circle cx="492" cy="300" r="50" fill="#FFFFFF"/><path d="M438,294 A54,54 0 0 1 546,294 Z" fill="#FFFFFF"/><path d="M448,284 L402,296" stroke="#FFFFFF" stroke-width="22" stroke-linecap="round"/></g></svg>
+</defs><g transform="translate(512 512) scale(1.06) translate(-512 -512) translate(-26 0)"><g opacity="1.0" ><path d="M354,364 C374,350 406,352 426,372 C420,418 404,452 402,478 C400,500 404,518 404,534 L350,530 C352,504 358,484 356,464 C352,432 344,398 354,364 Z" fill="#FFFFFF" stroke="#FFFFFF" stroke-width="16" stroke-linejoin="round"/><path d="M414,386 L468,318 L498,238" fill="none" stroke="#FFFFFF" stroke-width="40" stroke-linecap="round" stroke-linejoin="round"/><path d="M360,392 L298,452 L322,520" fill="none" stroke="#FFFFFF" stroke-width="40" stroke-linecap="round" stroke-linejoin="round"/><path d="M390,512 L458,634 L440,760 L484,774" fill="none" stroke="#FFFFFF" stroke-width="50" stroke-linecap="round" stroke-linejoin="round"/><path d="M364,514 L302,638 L252,742 L290,764" fill="none" stroke="#FFFFFF" stroke-width="50" stroke-linecap="round" stroke-linejoin="round"/><circle cx="394" cy="284" r="46" fill="#FFFFFF"/><path d="M344,278 A50,50 0 0 1 444,278 Z" fill="#FFFFFF"/><path d="M356,268 L322,275" stroke="#FFFFFF" stroke-width="18" stroke-linecap="round"/></g></g></svg>

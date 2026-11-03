@@ -357,7 +357,7 @@ final class MirrorWindowController: NSObject, NSWindowDelegate {
         let w = MirrorWindow(
             contentRect: CGRect(x: 0, y: 0, width: 1280, height: 720),
             styleMask: [.borderless], backing: .buffered, defer: false)
-        w.title = "DisplayCam 镜子"
+        w.title = "Mirra 镜子"
         w.appearance = NSAppearance(named: .darkAqua)
         w.isReleasedWhenClosed = false
         w.backgroundColor = .black

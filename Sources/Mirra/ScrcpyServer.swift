@@ -4,7 +4,7 @@ import Foundation
 /// The client protocol is version-specific, so this must match the bundled server exactly.
 enum ScrcpyServer {
     static let version = "5.0.1"
-    static let remotePath = "/data/local/tmp/displaycam-server.jar"
+    static let remotePath = "/data/local/tmp/mirra-server.jar"
 
     /// Bundled copy inside the .app, or the repo copy when running with `swift run`.
     static var localPath: String? {

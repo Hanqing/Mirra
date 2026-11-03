@@ -9,30 +9,40 @@
 		<string>zh-Hans</string>
 	</array>
 	<key>CFBundleName</key>
-	<string>DisplayCam</string>
+	<string>Mirra</string>
 	<key>CFBundleDisplayName</key>
-	<string>DisplayCam</string>
+	<string>Mirra</string>
 	<key>CFBundleIdentifier</key>
-	<string>com.hanqing.DisplayCam</string>
+	<string>com.hanqing.Mirra</string>
 	<key>CFBundleExecutable</key>
-	<string>DisplayCam</string>
+	<string>Mirra</string>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
-	<string>1.1.0</string>
+	<string>1.2.0</string>
 	<key>CFBundleVersion</key>
-	<string>2</string>
+	<string>3</string>
 	<key>CFBundleIconFile</key>
 	<string>AppIcon</string>
 	<key>CFBundleIconName</key>
 	<string>AppIcon</string>
 	<key>NSHumanReadableCopyright</key>
-	<string>DisplayCam · 手机端组件来自 scrcpy（Apache 2.0）</string>
+	<string>Mirra 舞镜 · 手机端组件来自 scrcpy（Apache 2.0）</string>
 	<key>LSMinimumSystemVersion</key>
 	<string>26.0</string>
 	<key>NSHighResolutionCapable</key>
 	<true/>
 	<key>LSApplicationCategoryType</key>
 	<string>public.app-category.healthcare-fitness</string>
+	<key>SUFeedURL</key>
+	<string>https://hanqing.github.io/Mirra/appcast.xml</string>
+	<key>SUPublicEDKey</key>
+	<string>8E9LmmlQHIP86QZuaYids9K8Rj5YnEKNp5DmHPXSdL4=</string>
+	<key>SUEnableAutomaticChecks</key>
+	<true/>
+	<key>SUScheduledCheckInterval</key>
+	<integer>86400</integer>
+	<key>SUAllowsAutomaticUpdates</key>
+	<true/>
 </dict>
 </plist>

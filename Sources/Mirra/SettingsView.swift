@@ -149,25 +149,55 @@ private struct RecordingSettings: View {
 }
 
 private struct AboutSettings: View {
+    @EnvironmentObject private var updates: UpdateController
+
+    private var version: String {
+        let short = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String
+        return short.map { "版本 \($0)" } ?? "开发版"
+    }
+
     var body: some View {
-        VStack(spacing: 14) {
-            AppIconImage(size: 112)
-            Text("DisplayCam").font(.title.bold())
-            Text("把旧手机变成你的舞蹈镜子")
-                .foregroundStyle(.secondary)
-            Text("版本 \(Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "开发版")")
-                .font(.caption)
-                .foregroundStyle(.tertiary)
-            HStack(spacing: 12) {
-                Link("官网", destination: URL(string: "https://hanqing.github.io/DisplayCam/")!)
-                Link("GitHub", destination: URL(string: "https://github.com/Hanqing/DisplayCam")!)
+        Form {
+            Section {
+                VStack(spacing: 12) {
+                    AppIconImage(size: 104)
+                    VStack(spacing: 4) {
+                        Text("Mirra").font(.title.bold())
+                        Text("舞镜 · 把旧手机变成你的舞蹈镜子").foregroundStyle(.secondary)
+                        Text(version).font(.caption).foregroundStyle(.tertiary)
+                    }
+                    HStack(spacing: 10) {
+                        Link("官网", destination: URL(string: "https://hanqing.github.io/Mirra/")!)
+                        Link("GitHub", destination: URL(string: "https://github.com/Hanqing/Mirra")!)
+                    }
+                    .buttonStyle(.glass)
+                }
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 8)
             }
-            .buttonStyle(.glass)
-            Text("手机端组件来自开源项目 scrcpy（Apache 2.0）。")
-                .font(.caption)
-                .foregroundStyle(.tertiary)
+            Section {
+                Toggle("自动检查更新", isOn: $updates.automaticallyChecks)
+                Toggle("自动下载并安装更新", isOn: $updates.automaticallyDownloads)
+                    .disabled(!updates.automaticallyChecks)
+                HStack {
+                    Spacer()
+                    Button("立即检查更新") { updates.checkForUpdates() }
+                        .disabled(!updates.canCheckForUpdates)
+                }
+            } header: {
+                Text("更新")
+            } footer: {
+                Text(updates.isAvailable
+                     ? "新版本发布在 GitHub 上，每个安装包都经过签名校验。"
+                     : "开发版不支持自动更新。")
+            }
+            .disabled(!updates.isAvailable)
+            Section {
+                Text("手机端组件来自开源项目 scrcpy（Apache 2.0）。自动更新由 Sparkle 提供。")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
         }
-        .padding(30)
-        .frame(maxWidth: .infinity)
+        .formStyle(.grouped)
     }
 }

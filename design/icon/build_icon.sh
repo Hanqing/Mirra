@@ -18,4 +18,4 @@ done
 iconutil -c icns "$SET" -o AppIcon.icns
 rm -rf "$SET"
 echo "Built AppIcon.icns"
-cp layers/*.svg AppIcon.icon/Assets/
+mkdir -p AppIcon.icon/Assets && cp layers/*.svg AppIcon.icon/Assets/

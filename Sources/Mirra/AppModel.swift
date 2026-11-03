@@ -167,7 +167,7 @@ final class AppModel: ObservableObject {
     lazy var previewView = MirrorCompositionView(model: self, layers: pipeline.makeLayers(), style: .preview)
 
     private var adb: ADB?
-    private let work = DispatchQueue(label: "DisplayCam.adb")
+    private let work = DispatchQueue(label: "Mirra.adb")
     private var session: StreamSession?
     private var stoppingSession: StreamSession?
     private var pollTimer: Timer?
@@ -221,7 +221,7 @@ final class AppModel: ObservableObject {
                     self.bufferedSeconds = stats.bufferedSeconds
                 }
                 if self.delayedReady != stats.delayedReady { self.delayedReady = stats.delayedReady }
-                if ProcessInfo.processInfo.environment["DISPLAYCAM_DEBUG"] != nil {
+                if ProcessInfo.processInfo.environment["MIRRA_DEBUG"] != nil {
                     NSLog("[stats] fps=%.1f buffered=%.1fs delayedReady=%d", stats.fps, stats.bufferedSeconds, stats.delayedReady ? 1 : 0)
                 }
             }
@@ -530,7 +530,7 @@ final class AppModel: ObservableObject {
             IOPMAssertionCreateWithName(
                 kIOPMAssertionTypePreventUserIdleDisplaySleep as CFString,
                 IOPMAssertionLevel(kIOPMAssertionLevelOn),
-                "DisplayCam 镜子显示中" as CFString,
+                "Mirra 镜子显示中" as CFString,
                 &sleepAssertion)
         } else if !wanted && sleepAssertion != 0 {
             IOPMAssertionRelease(sleepAssertion)

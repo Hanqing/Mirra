@@ -48,7 +48,7 @@ final class MediaPipeline {
         }
     }
 
-    private let queue = DispatchQueue(label: "DisplayCam.media", qos: .userInteractive)
+    private let queue = DispatchQueue(label: "Mirra.media", qos: .userInteractive)
     private var timer: DispatchSourceTimer?
 
     // Everything below is only touched on `queue`.
@@ -280,7 +280,7 @@ final class MediaPipeline {
         let stats = Stats(fps: Double(frameCount) / elapsed, bufferedSeconds: buffered, delayedReady: delayedSynced)
         frameCount = 0
         statsSince = now
-        if ProcessInfo.processInfo.environment["DISPLAYCAM_DEBUG"] != nil {
+        if ProcessInfo.processInfo.environment["MIRRA_DEBUG"] != nil {
             for sink in liveSinks + delayedSinks where sink.layer.sampleBufferRenderer.status == .failed {
                 NSLog("[render] failed: %@", String(describing: sink.layer.sampleBufferRenderer.error))
             }

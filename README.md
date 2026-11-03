@@ -1,13 +1,13 @@
-<p align="center"><img src="docs/img/icon.png" width="128" alt="DisplayCam"></p>
+<p align="center"><img src="docs/img/icon.png" width="128" alt="Mirra"></p>
 
-<h1 align="center">DisplayCam</h1>
+<h1 align="center">Mirra · 舞镜</h1>
 
 <p align="center"><b>手机当眼睛，显示器当镜子。</b><br>
 把闲置的 Android 手机对着自己，画面实时显示在 Mac 的显示器上。专为跟练跳舞设计。</p>
 
 <p align="center">
-  <a href="https://hanqing.github.io/DisplayCam/">官网</a> ·
-  <a href="https://github.com/Hanqing/DisplayCam/releases/latest">下载</a>
+  <a href="https://hanqing.github.io/Mirra/">官网</a> ·
+  <a href="https://github.com/Hanqing/Mirra/releases/latest">下载</a>
 </p>
 
 ## 功能
@@ -17,6 +17,7 @@
 - **录制**：随时开始录制，或一键「保存刚才 15 秒」，同时录下手机麦克风的声音
 - **录像库**：按时间整理，带缩略图，双击播放
 - **为 macOS 26 打造**：Liquid Glass 界面，菜单栏控制，镜子显示时屏幕不休眠
+- **自动更新**：每天检查 GitHub 上的新版本，安装包经 EdDSA 签名校验后更新
 - 手机息屏也能用；4:3 画面在手机横放时拍得到全身；断开后自动重连
 
 ## 系统要求
@@ -27,7 +28,7 @@
 
 ## 使用
 
-1. 从 [Releases](https://github.com/Hanqing/DisplayCam/releases/latest) 下载 `DisplayCam.zip`，解压后拖进「应用程序」。
+1. 从 [Releases](https://github.com/Hanqing/Mirra/releases/latest) 下载 `Mirra.zip`，解压后拖进「应用程序」。
    App 没有经过 Apple 公证，第一次打开时，到「系统设置 › 隐私与安全性」里点「仍要打开」。
 2. 手机打开 USB 调试，用数据线连上 Mac，在手机上点「允许」。
 3. 手机横放、后置镜头对着自己。点「打开镜子」，画面会全屏显示在你选择的显示器上。
@@ -50,11 +51,21 @@
 只需要 Command Line Tools（Swift 6.2+）：
 
 ```bash
-./scripts/build-app.sh        # 生成 build/DisplayCam.app
-open build/DisplayCam.app
+./scripts/build-app.sh        # 生成 build/Mirra.app
+open build/Mirra.app
 ```
 
 装了 Xcode 并同意了许可协议时，打包脚本会额外编译 Icon Composer 图标（`design/icon/AppIcon.icon`），在 macOS 26 上显示 Liquid Glass 效果。图标源文件由 `design/icon/make_icon.py` 生成，运行 `design/icon/build_icon.sh` 重新生成。
+
+## 发布新版本
+
+```bash
+scripts/release.sh 1.3.0 notes.md   # notes.md：这一版的更新说明（Markdown）
+```
+
+脚本会更新版本号、打包、给安装包签名并用 App 内置的公钥校验，然后创建 GitHub Release（附 `Mirra.zip`），最后把这一版写进 `docs/appcast.xml`。GitHub Pages 发布这个文件后，已安装的 Mirra 会通过 Sparkle 收到更新。
+
+签名私钥放在仓库外：`~/.config/mirra/sparkle_ed25519.pem`（也可以用环境变量 `MIRRA_SPARKLE_KEY` 指定）。**请备份这个文件**：丢了它，已安装的 App 就无法再自动更新。对应的公钥写在 `Resources/Info.plist` 的 `SUPublicEDKey` 里。
 
 ## 原理
 
@@ -76,9 +87,10 @@ Mac：StreamSession（scrcpy 协议）→ MediaPipeline
 | `Recorder.swift` / `RecordingsStore.swift` | 写 MP4，管理录像库 |
 | `MirrorView.swift` | 镜子画面（镜像、旋转、分屏）和镜子窗口 |
 | `MainWindow.swift` / `SettingsView.swift` / `App.swift` | 界面 |
+| `Updater.swift` | 自动更新（Sparkle） |
 
-开发调试：`DISPLAYCAM_DEBUG=1` 输出帧率和渲染日志；`DISPLAYCAM_SELFTEST=<目录>` 自动执行录制流程并把窗口截图保存到该目录。
+开发调试：`MIRRA_DEBUG=1` 输出帧率和渲染日志；`MIRRA_SELFTEST=<目录>` 自动执行录制流程并把窗口截图保存到该目录。
 
 ## 致谢
 
-手机端使用 [scrcpy](https://github.com/Genymobile/scrcpy) 5.0.1 的 `scrcpy-server`（Apache 2.0，见 `Resources/LICENSE-scrcpy`）。客户端协议和版本绑定，升级时要同时替换 `Resources/scrcpy-server` 并修改 `ScrcpyServer.version`。
+自动更新使用 [Sparkle](https://sparkle-project.org)。手机端使用 [scrcpy](https://github.com/Genymobile/scrcpy) 5.0.1 的 `scrcpy-server`（Apache 2.0，见 `Resources/LICENSE-scrcpy`）。客户端协议和版本绑定，升级时要同时替换 `Resources/scrcpy-server` 并修改 `ScrcpyServer.version`。
